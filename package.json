@@ -1,0 +1,12 @@
+{
+	"name": "com.zorax.paper-origami",
+	"version": "0.1.0",
+	"displayName": "Zorax Paper Origami",
+	"description": "A paper folder for digital origami",
+	"unity": "2021.3",
+	"author": {
+		"name": "Sooly890",
+		"email": "130508235+Sooly890@users.noreply.github.com",
+		"url": ""
+	}
+}
