@@ -6,7 +6,8 @@ using UnityEngine;
 namespace Zorax.PaperOrigami.UnityPhysics
 {
 	[RequireComponent(typeof(MeshFilter))]
-	public class PaperMesh : MonoBehaviour
+	[RequireComponent(typeof(MeshRenderer))]
+	public class GenerateMesh : MonoBehaviour
 	{
 		Mesh mesh;
 
@@ -18,10 +19,6 @@ namespace Zorax.PaperOrigami.UnityPhysics
 
 		public MeshFilter meshFilter;
 
-		public GameObject prefab;
-
-		public List<GameObject> gameObjects = new List<GameObject>();
-
 		void Start()
 		{
 			mesh = new Mesh();
@@ -31,31 +28,12 @@ namespace Zorax.PaperOrigami.UnityPhysics
 
 		void Update()
 		{
-			UpdatePoints();
 			UpdateMesh();
 			SetMesh();
 		}
 
-		int SearchVector3Array(Vector3 v, Vector3[] values)
-		{
-			int minIdx = -1;
-			Vector3 min = Vector3.one * Mathf.Infinity;
-
-			for (int i = 0; i < values.Length; i++)
-			{
-				if (Vector3.Distance(values[i], v) < Vector3.Distance(min, v))
-				{
-					min = values[i];
-					minIdx = i;
-				}
-			}
-
-			return minIdx;
-		}
-
 		void CreateShape()
 		{
-			gameObjects = new List<GameObject>();
 			vertices = new Vector3[(xSize + 1) * (zSize + 1)];
 
 			for (int i = 0, z = 0; z <= zSize; z++)
@@ -64,7 +42,6 @@ namespace Zorax.PaperOrigami.UnityPhysics
 				{
 					Vector3 pos = new Vector3((float)x, 0, (float)z);
 					vertices[i] = pos;
-					gameObjects.Add(Instantiate(prefab, pos, Quaternion.identity));
 
 					i++;
 				}
@@ -87,9 +64,6 @@ namespace Zorax.PaperOrigami.UnityPhysics
 					triangles[tris + 4] = vert + xSize + 1;
 					triangles[tris + 5] = vert + xSize + 2;
 
-					PaperVertex paperVertex;
-					paperVertex = ConfigHingeJoints(vert, vert + 1, vert + xSize + 1);
-
 					vert++;
 					tris += 6;
 				}
@@ -98,17 +72,6 @@ namespace Zorax.PaperOrigami.UnityPhysics
 
 			}
 
-		}
-
-		PaperVertex ConfigHingeJoints(int vert, int up, int right)
-		{
-			PaperVertex vertex = gameObjects[vert].AddComponent<PaperVertex>();
-
-			vertex.gameObjects = gameObjects;
-			vertex.right = right;
-			vertex.up = up;
-
-			return vertex;
 		}
 
 		void UpdateMesh()
@@ -126,14 +89,5 @@ namespace Zorax.PaperOrigami.UnityPhysics
 			meshFilter.mesh = mesh;
 			//meshCollider.sharedMesh = mesh;
 		}
-
-		void UpdatePoints()
-		{
-			for (int i = 0; i < vertices.Length; i++)
-			{
-				vertices[i] = gameObjects[i].transform.position;
-			}
-		}
-
 	}
 }
